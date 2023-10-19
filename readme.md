@@ -15,12 +15,19 @@ Please complete the workplan by December 20, 2023.
   vdw_census_demog_dec_2020.zip
 
 Files Included in Zip file:
-  sas/vdw_census_demog_dec_2020.sas
-  input/qa_macros.sas 
-  input/custom_macros.sas 
-  document/vdw_pro_qa_ wp02v01.doc??? is 
+* sas/vdw_census_demog_dec_2020.sas
+* input/qa_macros.sas 
+* input/custom_macros.sas 
+* input/qa_macros.sas 
+* local_only/info.md
+* document/sample_census_key.txt
 
-Number and Type of Files to be Returned: 14-15 SAS data sets, 1 log, 1 report pdf
+Number and Type of Files to be Returned: 
+1 zip file containing:
+1. 1 log file
+1. 1 PDF file
+1. 1 share_info.md
+1. 3 sas datasets
 
 # Running this workplan
 * Prior to running the plan, you'll need to get an API key from the Census Bureau.  You can do this in about two minutes by: 
