@@ -1,0 +1,6 @@
+### Ignore all files except for the .sas files
+*.*
+!*.sas
+!.gitignore
+!readme.md
+run.sas
