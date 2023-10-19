@@ -32,7 +32,7 @@ Number and Type of Files to be Returned:
 # Running this workplan
 * Prior to running the plan, you'll need to get an API key from the Census Bureau.  You can do this in about two minutes by: 
 1. Go to https://api.census.gov/data/key_signup.html and request a key (you'll need to provide an email address, share your organization, and agree to the terms of service). 
-1. Check your email and copy the key from the email you receive to a text file (e.g., census_key.txt). You can see an example in the documents folder of this workplan "census_key.txt".
+1. Check your email and copy the key from the email you receive to a text file (e.g., census_key.txt). You can see an example in the documents folder of this workplan "census_key.txt". Example [Census Key](/document/sample_census_key.txt).
 1. Once you have your key, you'll %include the  to the sas/vdw_census_demog_dec_2020.sas file in the following line:
 ```sas
 * Where does your census key live?;
