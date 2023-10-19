@@ -2,5 +2,6 @@
 *.*
 !*.sas
 !.gitignore
-!readme.md
+!*.md
+!sample_census_key.txt
 run.sas
