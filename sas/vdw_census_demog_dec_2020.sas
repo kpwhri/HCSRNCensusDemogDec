@@ -70,7 +70,7 @@ libname QA_ds "&outshare";
 %let workplan = vdw_census_demog_2020;
 
 *Define content area;
-%let content_area = PRO;
+%let content_area = CENSUS;
 
 *Set the year/month of the program distribution YYYYMM;
 %let era = 202310;
@@ -198,17 +198,18 @@ CENSUS_DEMOG_DEC: META CHECKS
 %let content_area = cendemogdec;
 
 * Variable type:  1=Numeric   2=Character;
-ods proclabel="Check Variable Existence: PRO_SURVEYS";
+ods proclabel="Check Variable Existence: CENSUS_DEMOG_DEC";
 %CESR_VLC_TYPE_STMV( indataset=outlocal.decennial_2020, 
 					vars_and_types= &uni_vars. 1 geocode state county tract 2,
 					outdataset= &qaoutlib..&content_area._vartype); 
 
+ods proclabel="Check Variable Lengths: CENSUS_DEMOG_DEC";
 %CESR_VLC_Length_STMV(indataset= outlocal.decennial_2020,
 					vars_and_lengths= 	geocode 11 state 2 county 3 tract 6 
 										,
 					outdataset=&qaoutlib..&content_area._length   ); 
 
-
+ods proclabel="Examine variable distributions: CENSUS_DEMOG_DEC";
 proc univariate data=outlocal.decennial_2020 round=.0001;
     var &uni_vars.;
     histogram &uni_vars. / normal ;
