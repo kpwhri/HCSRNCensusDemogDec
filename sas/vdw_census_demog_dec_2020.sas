@@ -43,11 +43,10 @@ SITE EDITS
 ---------------------------------------------;
 
 *Where did you unpack the zip file?;
- %let root = \\fsproj\aaa...\PACKAGE_LOCATION; 
+* %let root = \\fsproj\aaa...\PACKAGE_LOCATION;
 
- 
 * Where does your census key live?;
-%include "\\path\to\census_key.txt";
+/* %include "\\path\to\census_key.txt"; */
 
 
 *---NO EDITS SHOULD BE NEEDED BEYOND THIS POINT---;
@@ -95,6 +94,7 @@ run;
 
 *Call input files;
 %include "&input./custom_macros.sas";
+%include "&input./qa_macros.sas";
 
 * Global titles and footnotes;
 title1 "VDW Census: Decennial 2020 ETL"; 
@@ -138,9 +138,17 @@ filename pdfmain "&outshare./VDW Census Demog Decennial 2020 ETL &currentMonth. 
 %decennial_pipeline(outlocal.census_raw, year=2020, geog=tract, key=&census_key., new_basetable=true);
 
 %let vdw_cen_demog_dec_vars = GEOCODE STATE COUNTY TRACT RA_NHS_WH RA_NHS_BL RA_NHS_AM RA_NHS_AS RA_NHS_HA RA_NHS_OT RA_NHS_ML RA_HIS_WH RA_HIS_BL RA_HIS_AM RA_HIS_AS RA_HIS_HA RA_HIS_OT RA_HIS_ML HOUSES_N HOUSES_OCCUPIED HOUSES_OWN HOUSES_RENT HOUSES_UNOCC_FORRENT HOUSES_UNOCC_FORSALE HOUSES_UNOCC_RENTSOLD HOUSES_UNOCC_SEASONAL HOUSES_UNOCC_MIGRANT HOUSES_UNOCC_OTHER ;
+%let uni_vars = RA_NHS_WH RA_NHS_BL RA_NHS_AM RA_NHS_AS RA_NHS_HA RA_NHS_OT RA_NHS_ML RA_HIS_WH RA_HIS_BL RA_HIS_AM RA_HIS_AS RA_HIS_HA RA_HIS_OT RA_HIS_ML HOUSES_N HOUSES_OCCUPIED HOUSES_OWN HOUSES_RENT HOUSES_UNOCC_FORRENT HOUSES_UNOCC_FORSALE HOUSES_UNOCC_RENTSOLD HOUSES_UNOCC_SEASONAL HOUSES_UNOCC_MIGRANT HOUSES_UNOCC_OTHER ;
 data outlocal.decennial_2020;
+    length 
+        geocode     $11
+        state       $2
+        county      $3
+        tract       $6
+        &uni_vars.  8.
+    ;
     set outlocal.census_raw;
-    *keep &vdw_cen_demog_dec_vars.;
+    keep &vdw_cen_demog_dec_vars.;
     geocode = catx(state, county, tract);
     RA_NHS_WH = divide(P5_003N,P5_001N);
     RA_NHS_BL = divide(P5_004N,P5_001N);
@@ -172,6 +180,7 @@ run;
 
 ods PDF file=pdfmain uniform style=analysis pdftoc=1;
 ods graphics / reset width=90pct height=90pct;
+ods listing gpath="&outlocal.";
 
 * create final dataset;
 proc contents data= outlocal.census_raw;
@@ -183,10 +192,26 @@ run;
 proc print data=outlocal.decennial_2020(obs=10);
 run;
 
-%let uni_vars = RA_NHS_WH RA_NHS_BL RA_NHS_AM RA_NHS_AS RA_NHS_HA RA_NHS_OT RA_NHS_ML RA_HIS_WH RA_HIS_BL RA_HIS_AM RA_HIS_AS RA_HIS_HA RA_HIS_OT RA_HIS_ML HOUSES_N HOUSES_OCCUPIED HOUSES_OWN HOUSES_RENT HOUSES_UNOCC_FORRENT HOUSES_UNOCC_FORSALE HOUSES_UNOCC_RENTSOLD HOUSES_UNOCC_SEASONAL HOUSES_UNOCC_MIGRANT HOUSES_UNOCC_OTHER ;
-proc univariate data=outlocal.decennial_2020;
+*-------------------------------------
+CENSUS_DEMOG_DEC: META CHECKS
+--------------------------------------;
+%let content_area = cendemogdec;
+
+* Variable type:  1=Numeric   2=Character;
+ods proclabel="Check Variable Existence: PRO_SURVEYS";
+%CESR_VLC_TYPE_STMV( indataset=outlocal.decennial_2020, 
+					vars_and_types= &uni_vars. 1 geocode state county tract 2,
+					outdataset= &qaoutlib..&content_area._vartype); 
+
+%CESR_VLC_Length_STMV(indataset= outlocal.decennial_2020,
+					vars_and_lengths= 	geocode 11 state 2 county 3 tract 6 
+										,
+					outdataset=&qaoutlib..&content_area._length   ); 
+
+
+proc univariate data=outlocal.decennial_2020 round=.0001;
     var &uni_vars.;
-    histogram &uni_vars.;
+    histogram &uni_vars. / normal ;
 run;
 
 ods pdf close;
