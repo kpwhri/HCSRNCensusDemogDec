@@ -46,6 +46,7 @@ SITE EDITS
 * %let root = \\fsproj\aaa...\PACKAGE_LOCATION;
 
 * Where does your census key live?;
+* check out document/sample_census_key.txt for an example;
 /* %include "\\path\to\census_key.txt"; */
 
 
@@ -178,9 +179,10 @@ data outlocal.decennial_2020;
 run;
 
 
+ods listing gpath="&outlocal.";
 ods PDF file=pdfmain uniform style=analysis pdftoc=1;
 ods graphics / reset width=90pct height=90pct;
-ods listing gpath="&outlocal.";
+
 
 * create final dataset;
 proc contents data= outlocal.census_raw;
