@@ -230,6 +230,19 @@ run;
 
 ods pdf close;
 
+*--------------------------------------------
+WRAPPING UP
+---------------------------------------------;
+
+
+data _null_;
+    et=datetime();
+    call symput("et",et);
+    call symput ("end_time",put(et,datetime22.3));
+run;
+
+%put &session_date &st &et &start_time &end_time;
+
 
 data outshare.run_time;
     length SITE $4;
