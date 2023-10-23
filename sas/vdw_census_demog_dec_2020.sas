@@ -3,7 +3,7 @@ INVENTORY OVERVIEW
 ************************************************************************************
 
 Program Name:   vdw_census_demog_2020.sas      
-Contacts: 		Alphonse.Derus@kp.org
+Contacts:         Alphonse.Derus@kp.org
 
 
 VDW Version: V5                                                
@@ -19,11 +19,11 @@ Dependencies :
 VDW tables:
 
 Other Files:  
-	census_key
+    census_key
 
 -------------------------------------------------------------------------------------- 
 input:
-	1	custom_macros.sas
+    1    custom_macros.sas
 
 -------------------------------------------------------------------------------------- 
 local_only: 
@@ -32,8 +32,12 @@ Number of files created in this folder = [Varies]
 
 -------------------------------------------------------------------------------------- 
 share:    
-Number of shared SAS Datasets created: 3
+Number of shared SAS Datasets created: 4
 Output SAS data sets to be shared outside your site: 
+    1 - cendemogdec_length.sas7bdat
+    2 - cendemogdec_vartype.sas7bdat
+    3 - dco_file.sas7bdat
+    4 - run_time.sas7bdat
 ;
 
 ods listing close;
@@ -81,16 +85,16 @@ libname QA_ds "&outshare";
 %let version = 5;
 
 data _null_;
-	*For trend cutoffs;
-	call symput('start_year', 2000);
-	call symput('end_year', strip(year(today())));
-	call symput('currentMonth', strip(put(today(), monname.)));
+    *For trend cutoffs;
+    call symput('start_year', 2000);
+    call symput('end_year', strip(year(today())));
+    call symput('currentMonth', strip(put(today(), monname.)));
 
-	*For runtime file;
-	st=datetime();
-	call symput("session_date",put(today(),mmddyy10.));
-	call symput("st",st);
-	call symput("start_time",put(st,datetime.));
+    *For runtime file;
+    st=datetime();
+    call symput("session_date",put(today(),mmddyy10.));
+    call symput("st",st);
+    call symput("start_time",put(st,datetime.));
 run;
 
 *Call input files;
@@ -102,7 +106,7 @@ title1 "VDW Census: Decennial 2020 ETL";
 footnote1 "&_sitename : &workplan. (&sysdate, &systime)"; 
 
 *Establish log in share folder and list in local;
-proc printto 	
+proc printto     
     log="&root./share/&workplan._&era..log"
     print="&root./local_only/&workplan._&era..lst"
     ;
@@ -138,8 +142,8 @@ filename pdfmain "&outshare./VDW Census Demog Decennial 2020 ETL &currentMonth. 
 
 %decennial_pipeline(outlocal.census_raw, year=2020, geog=tract, key=&census_key., new_basetable=true);
 
-%let vdw_cen_demog_dec_vars = GEOCODE STATE COUNTY TRACT RA_NHS_WH RA_NHS_BL RA_NHS_AM RA_NHS_AS RA_NHS_HA RA_NHS_OT RA_NHS_ML RA_HIS_WH RA_HIS_BL RA_HIS_AM RA_HIS_AS RA_HIS_HA RA_HIS_OT RA_HIS_ML HOUSES_N HOUSES_OCCUPIED HOUSES_OWN HOUSES_RENT HOUSES_UNOCC_FORRENT HOUSES_UNOCC_FORSALE HOUSES_UNOCC_RENTSOLD HOUSES_UNOCC_SEASONAL HOUSES_UNOCC_MIGRANT HOUSES_UNOCC_OTHER ;
-%let uni_vars = RA_NHS_WH RA_NHS_BL RA_NHS_AM RA_NHS_AS RA_NHS_HA RA_NHS_OT RA_NHS_ML RA_HIS_WH RA_HIS_BL RA_HIS_AM RA_HIS_AS RA_HIS_HA RA_HIS_OT RA_HIS_ML HOUSES_N HOUSES_OCCUPIED HOUSES_OWN HOUSES_RENT HOUSES_UNOCC_FORRENT HOUSES_UNOCC_FORSALE HOUSES_UNOCC_RENTSOLD HOUSES_UNOCC_SEASONAL HOUSES_UNOCC_MIGRANT HOUSES_UNOCC_OTHER ;
+%let vdw_cen_demog_dec_vars = CENSUS_YEAR GEOCODE STATE COUNTY TRACT RA_NHS_WH RA_NHS_BL RA_NHS_AM RA_NHS_AS RA_NHS_HA RA_NHS_OT RA_NHS_ML RA_HIS_WH RA_HIS_BL RA_HIS_AM RA_HIS_AS RA_HIS_HA RA_HIS_OT RA_HIS_ML HOUSES_N HOUSES_OCCUPIED HOUSES_OWN HOUSES_RENT HOUSES_UNOCC_FORRENT HOUSES_UNOCC_FORSALE HOUSES_UNOCC_RENTSOLD HOUSES_UNOCC_SEASONAL HOUSES_UNOCC_MIGRANT HOUSES_UNOCC_OTHER ;
+%let uni_vars = CENSUS_YEAR RA_NHS_WH RA_NHS_BL RA_NHS_AM RA_NHS_AS RA_NHS_HA RA_NHS_OT RA_NHS_ML RA_HIS_WH RA_HIS_BL RA_HIS_AM RA_HIS_AS RA_HIS_HA RA_HIS_OT RA_HIS_ML HOUSES_N HOUSES_OCCUPIED HOUSES_OWN HOUSES_RENT HOUSES_UNOCC_FORRENT HOUSES_UNOCC_FORSALE HOUSES_UNOCC_RENTSOLD HOUSES_UNOCC_SEASONAL HOUSES_UNOCC_MIGRANT HOUSES_UNOCC_OTHER ;
 data outlocal.decennial_2020;
     length 
         geocode     $11
@@ -150,6 +154,7 @@ data outlocal.decennial_2020;
     ;
     set outlocal.census_raw;
     keep &vdw_cen_demog_dec_vars.;
+    CENSUS_YEAR = 2020;
     geocode = catx(state, county, tract);
     RA_NHS_WH = divide(P5_003N,P5_001N);
     RA_NHS_BL = divide(P5_004N,P5_001N);
@@ -201,15 +206,20 @@ CENSUS_DEMOG_DEC: META CHECKS
 
 * Variable type:  1=Numeric   2=Character;
 ods proclabel="Check Variable Existence: CENSUS_DEMOG_DEC";
-%CESR_VLC_TYPE_STMV( indataset=outlocal.decennial_2020, 
-					vars_and_types= &uni_vars. 1 geocode state county tract 2,
-					outdataset= &qaoutlib..&content_area._vartype); 
+%CESR_VLC_TYPE_STMV(  indataset=outlocal.decennial_2020
+                    , vars_and_types= &uni_vars. 1 
+                    , geocode state county tract 2
+                    , outdataset= &qaoutlib..&content_area._vartype); 
 
 ods proclabel="Check Variable Lengths: CENSUS_DEMOG_DEC";
-%CESR_VLC_Length_STMV(indataset= outlocal.decennial_2020,
-					vars_and_lengths= 	geocode 11 state 2 county 3 tract 6 
-										,
-					outdataset=&qaoutlib..&content_area._length   ); 
+%CESR_VLC_Length_STMV(indataset= outlocal.decennial_2020
+                        ,vars_and_lengths=     
+                            geocode 11 
+                            state 2 
+                            county 3 
+                            tract 6 
+                        ,outdataset=&qaoutlib..&content_area._length   
+                        ); 
 
 ods proclabel="Examine variable distributions: CENSUS_DEMOG_DEC";
 proc univariate data=outlocal.decennial_2020 round=.0001;
@@ -218,3 +228,46 @@ proc univariate data=outlocal.decennial_2020 round=.0001;
 run;
 
 ods pdf close;
+
+
+data outshare.run_time;
+    length SITE $4;
+    SITE="&_SiteAbbr.";
+    real_time=&et-&st;
+    hours=int(real_time/3600);
+    minutes=int((real_time-(hours*3600))/60);
+    seconds=real_time-(hours*3600)-(minutes*60);
+    program_start_time="&start_time.";
+    program_end_time="&end_time.";
+    content_area="&content_area.";
+    era=&era.;
+    work_plan_version="&wp_v.";      
+    vdw_version="&version.";
+run;
+
+data _null_; 
+    set outshare.run_time;
+    put "*********************************";
+    put "*********************************";
+    put "Program start time=&start_time";
+    put "Program end time  =&end_time";    
+    put "real time=" real_time " seconds";
+    put hours= minutes= seconds=;
+    put "*********************************";
+    put "*********************************";
+run;
+
+proc printto log=log print=print;
+run;
+
+*Clean up;
+footnote;    
+title;
+
+ods listing;
+
+*--------------------------------------------
+THE END
+---------------------------------------------;
+
+

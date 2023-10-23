@@ -38,9 +38,10 @@ Number and Type of Files to be Returned:
 * Where does your census key live?;
 %include "\\path\to\census_key.txt";
 ```
-* The workplan program has a clearly marked edit section near the top of the program.  Please complete the edits as directed by comments 
-* Review the log for ERRORS or WARNINGS.  If there are problems, please send a full log to the workgroup leads (contact info at top of workplan), after first making sure the log is redacted of PHI and any site-specific information that your site does not want released. You can refer to the review pdf in the local_only folder for a quick summary of the datasets being returned.
-* If changes are needed in your VDW tables, please make these changes and re-run the QA package. Please reach out to the VDW PRO workgroup leads if you have questions about the data. Once you have completed your final QA run and reviewed contents of the ‘share’ folder for PHI, move on to the data transfer.
+1. The workplan program has a clearly marked edit section near the top of the program.  Please complete the edits as directed by comments 
+1. Review the log for ERRORS or WARNINGS.  If there are problems, please send a full log to the workgroup leads (contact info at top of workplan), after first making sure the log is redacted of PHI and any site-specific information that your site does not want released. You can refer to the review pdf in the local_only folder for a quick summary of the datasets being returned.
+1. Append the 2020 Decennial Census Data to your existing Decennial Data.
+
 
 Directions to transfer data:
 * Zip files in the ‘share’ folder into one compressed file named:  vdw_census_demog_dec_yyyymmdd_&_siteabbr..zip.
