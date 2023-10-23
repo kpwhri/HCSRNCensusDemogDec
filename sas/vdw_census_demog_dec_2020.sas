@@ -110,7 +110,7 @@ proc printto
     log="&root./share/&workplan._&era..log"
     print="&root./local_only/&workplan._&era..lst"
     ;
-run; */
+run; 
 
  *--------------------------------------------
  ---------------------------------------------
@@ -202,13 +202,14 @@ run;
 *-------------------------------------
 CENSUS_DEMOG_DEC: META CHECKS
 --------------------------------------;
-%let content_area = cendemogdec;
+
 
 * Variable type:  1=Numeric   2=Character;
 ods proclabel="Check Variable Existence: CENSUS_DEMOG_DEC";
 %CESR_VLC_TYPE_STMV(  indataset=outlocal.decennial_2020
-                    , vars_and_types= &uni_vars. 1 
-                    , geocode state county tract 2
+                    , vars_and_types= 
+                        &uni_vars. 1 
+                        geocode state county tract 2
                     , outdataset= &qaoutlib..&content_area._vartype); 
 
 ods proclabel="Check Variable Lengths: CENSUS_DEMOG_DEC";
@@ -222,7 +223,7 @@ ods proclabel="Check Variable Lengths: CENSUS_DEMOG_DEC";
                         ); 
 
 ods proclabel="Examine variable distributions: CENSUS_DEMOG_DEC";
-proc univariate data=outlocal.decennial_2020 round=.0001;
+proc univariate data=outlocal.decennial_2020 round=.001;
     var &uni_vars.;
     histogram &uni_vars. / normal ;
 run;
@@ -269,5 +270,3 @@ ods listing;
 *--------------------------------------------
 THE END
 ---------------------------------------------;
-
-
