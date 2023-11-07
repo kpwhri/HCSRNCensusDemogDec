@@ -155,7 +155,7 @@ data outlocal.decennial_2020;
     set outlocal.census_raw;
     keep &vdw_cen_demog_dec_vars.;
     CENSUS_YEAR = 2020;
-    geocode = catx(state, county, tract);
+    geocode = cats(state, county, tract);
     RA_NHS_WH = divide(P5_003N,P5_001N);
     RA_NHS_BL = divide(P5_004N,P5_001N);
     RA_NHS_AM = divide(P5_005N,P5_001N);

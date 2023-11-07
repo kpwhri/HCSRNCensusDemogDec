@@ -27,7 +27,7 @@ Number and Type of Files to be Returned:
 1. 1 log file
 1. 1 PDF file
 1. 1 share_info.md
-1. 3 sas datasets
+1. 4 sas datasets
 
 # Running this workplan
 * Prior to running the plan, you'll need to get an API key from the Census Bureau.  You can do this in about two minutes by: 
